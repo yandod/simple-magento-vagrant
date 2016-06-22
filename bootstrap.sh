@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 SAMPLE_DATA=$1
-MAGE_VERSION="1.9.1.0"
-DATA_VERSION="1.9.0.0"
+MAGE_VERSION="1.9.2.3"
+DATA_VERSION="1.9.1.0"
 
 # Update Apt
 # --------------------
@@ -69,8 +69,10 @@ mysql -u root -e "FLUSH PRIVILEGES"
 # Download and extract
 if [[ ! -f "/vagrant/httpdocs/index.php" ]]; then
   cd /vagrant/httpdocs
-  wget http://www.magentocommerce.com/downloads/assets/${MAGE_VERSION}/magento-${MAGE_VERSION}.tar.gz
+  wget -q https://github.com/OpenMage/magento-mirror/archive/${MAGE_VERSION}.tar.gz
+  mv ${MAGE_VERSION}.tar.gz magento-${MAGE_VERSION}.tar.gz
   tar -zxvf magento-${MAGE_VERSION}.tar.gz
+  mv magento-mirror-${MAGE_VERSION} magento
   mv magento/* magento/.htaccess .
   chmod -R o+w media var
   chmod o+w app/etc
@@ -86,6 +88,8 @@ if [[ $SAMPLE_DATA == "true" ]]; then
   if [[ ! -f "/vagrant/magento-sample-data-${DATA_VERSION}.tar.gz" ]]; then
     # Only download sample data if we need to
     wget http://www.magentocommerce.com/downloads/assets/${DATA_VERSION}/magento-sample-data-${DATA_VERSION}.tar.gz
+    wget https://raw.githubusercontent.com/Vinai/compressed-magento-sample-data/${DATA_VERSION}/compressed-magento-sample-data-${DATA_VERSION}.tgz
+    mv compressed-magento-sample-data-${DATA_VERSION}.tgz magento-sample-data-${DATA_VERSION}.tar.gz
   fi
 
   tar -zxvf magento-sample-data-${DATA_VERSION}.tar.gz
